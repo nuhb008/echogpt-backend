@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: echogpt-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: echogpt
+      POSTGRES_PASSWORD: echogpt_password
+      POSTGRES_DB: echogpt
+    ports:
+      - "5432:5432"
+    volumes:
+      - echogpt_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  echogpt_postgres_data:
