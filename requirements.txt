@@ -1,0 +1,99 @@
+# EchoGPT Backend - Project Requirements
+#
+# NOTE: This is a Node.js / NestJS project. Packages are installed with npm
+# from package.json + package-lock.json, NOT with `pip install -r`.
+# This file is a human-readable summary of everything needed to run it.
+#
+# Setup:
+#   1. npm install
+#   2. docker compose up -d        (starts PostgreSQL)
+#   3. configure .env (DATABASE_URL, JWT secret, etc.)
+#   4. npx prisma generate && npx prisma migrate dev
+#   5. npm run start:dev
+#       6.docker ps
+# ---------------------------------------------------------------------------
+# Install commands
+# ---------------------------------------------------------------------------
+# Install everything from package-lock.json (recommended):
+#   npm install
+#
+# Clean install for CI / production (exact lockfile versions):
+#   npm ci
+#
+# Production only (skip dev dependencies):
+#   npm ci --omit=dev
+#
+# Manually install runtime dependencies (exact versions):
+#   npm install --save-exact @nestjs/common@12.1.0 @nestjs/config@12.0.1 @nestjs/core@12.1.0 @nestjs/jwt@12.0.2 @nestjs/passport@12.0.0 @nestjs/platform-express@12.1.0 @nestjs/swagger@12.0.2 @nestjs/throttler@6.7.0 @prisma/adapter-pg@7.10.0 @prisma/client@7.10.0 bcrypt@6.0.0 class-transformer@0.5.1 class-validator@0.15.1 passport@0.7.0 passport-jwt@4.0.1 pg@8.23.0 reflect-metadata@0.2.2 rxjs@7.8.2
+#
+# Manually install dev dependencies (exact versions):
+#   npm install --save-dev --save-exact @nestjs/cli@12.0.5 @nestjs/mau@0.2.8 @nestjs/schematics@12.0.5 @nestjs/testing@12.1.0 @types/bcrypt@6.0.0 @types/express@5.0.6 @types/jest@30.0.0 @types/node@24.13.6 @types/passport-jwt@4.0.1 @types/supertest@7.2.1 jest@30.5.2 oxlint@1.85.0 oxlint-tsgolint@7.0.2002 prettier@3.9.9 prisma@7.10.0 source-map-support@0.5.21 supertest@7.3.0 ts-jest@29.4.13 ts-loader@9.6.2 ts-node@10.9.2 tsconfig-paths@4.2.0 typescript@6.0.3
+#
+# Start PostgreSQL and set up Prisma:
+#   docker compose up -d
+#   npx prisma generate
+#   npx prisma migrate dev
+
+# ---------------------------------------------------------------------------
+# System requirements
+# ---------------------------------------------------------------------------
+node>=24.0.0            # developed on v24.19.0
+npm>=12.0.0             # developed on 12.1.0
+postgresql==16          # via docker-compose (image: postgres:16)
+docker                  # optional, for running PostgreSQL locally
+
+# ---------------------------------------------------------------------------
+# Runtime dependencies (installed versions)
+# ---------------------------------------------------------------------------
+@nestjs/common==12.1.0
+@nestjs/config==12.0.1
+@nestjs/core==12.1.0
+@nestjs/jwt==12.0.2
+@nestjs/passport==12.0.0
+@nestjs/platform-express==12.1.0
+@nestjs/swagger==12.0.2
+@nestjs/throttler==6.7.0
+@prisma/adapter-pg==7.10.0
+@prisma/client==7.10.0
+bcrypt==6.0.0
+class-transformer==0.5.1
+class-validator==0.15.1
+passport==0.7.0
+passport-jwt==4.0.1
+pg==8.23.0
+reflect-metadata==0.2.2
+rxjs==7.8.2
+
+# ---------------------------------------------------------------------------
+# Development dependencies (installed versions)
+# ---------------------------------------------------------------------------
+@nestjs/cli==12.0.5
+@nestjs/mau==0.2.8
+@nestjs/schematics==12.0.5
+@nestjs/testing==12.1.0
+@types/bcrypt==6.0.0
+@types/express==5.0.6
+@types/jest==30.0.0
+@types/node==24.13.6
+@types/passport-jwt==4.0.1
+@types/supertest==7.2.1
+jest==30.5.2
+oxlint==1.85.0
+oxlint-tsgolint==7.0.2002
+prettier==3.9.9
+prisma==7.10.0
+source-map-support==0.5.21
+supertest==7.3.0
+ts-jest==29.4.13
+ts-loader==9.6.2
+ts-node==10.9.2
+tsconfig-paths==4.2.0
+typescript==6.0.3
+
+
+
+#docker exec -it echogpt-postgres psql -U echogpt -d echogpt
+#npx prisma migrate dev --name init
+#npx prisma generate
+#npx prisma studio
+#npm run start:dev

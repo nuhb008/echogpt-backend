@@ -2,6 +2,207 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 // Get a free hosted Postgres database in seconds: `npx create-db`
+enum RoleName {
+  USER
+  ADMIN
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  EXPIRED
+}
+
+enum ProviderType {
+  OPENAI
+  ANTHROPIC
+  GEMINI
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+  SYSTEM
+}
+model Role {
+  id    String   @id @default(uuid())
+  name  RoleName @unique
+
+  users User[]
+
+  createdAt DateTime @default(now())
+}
+model User {
+  id           String @id @default(uuid())
+  email        String @unique
+  passwordHash String
+
+  name String?
+
+  roleId String
+  role   Role   @relation(fields: [roleId], references: [id])
+
+  sessions Session[]
+
+  subscription Subscription?
+
+  conversations Conversation[]
+
+  searches WebSearch[]
+
+  usageLogs UsageLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([roleId])
+}
+
+model Session {
+  id String @id @default(uuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  refreshTokenHash String
+
+  expiresAt DateTime
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model SubscriptionPlan {
+  id String @id @default(uuid())
+
+  name String @unique
+
+  monthlyLimit Int
+
+  price Decimal
+
+  subscriptions Subscription[]
+
+  createdAt DateTime @default(now())
+}
+
+model Subscription {
+  id String @id @default(uuid())
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  planId String
+  plan   SubscriptionPlan @relation(fields: [planId], references: [id])
+
+  status SubscriptionStatus
+
+  startDate DateTime
+  endDate   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AIProvider {
+  id String @id @default(uuid())
+
+  name ProviderType
+
+  model String
+
+  apiKeyEncrypted String
+
+  enabled Boolean @default(true)
+
+  isDefault Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([name])
+  @@index([enabled])
+}
+
+model Conversation {
+  id String @id @default(uuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title String?
+
+  messages Message[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model Message {
+  id String @id @default(uuid())
+
+  conversationId String
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  role MessageRole
+
+  content String
+
+  provider ProviderType?
+
+  model String?
+
+  createdAt DateTime @default(now())
+
+  @@index([conversationId])
+}
+
+model WebSearch {
+  id String @id @default(uuid())
+
+  userId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  query String
+
+  results Json?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+
+model UsageLog {
+  id String @id @default(uuid())
+
+  userId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  endpoint String
+
+  provider ProviderType?
+
+  model String?
+
+  tokensUsed Int?
+
+  statusCode Int
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+  @@index([endpoint])
+}
+
 
 generator client {
   provider = "prisma-client"
