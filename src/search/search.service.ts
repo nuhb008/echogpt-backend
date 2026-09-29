@@ -78,4 +78,57 @@ export class SearchService {
       take: 50,
     });
   }
+
+  async recent(userId: string, take = 10) {
+    // distinct requires the DISTINCT ON column(s) to be first in orderBy
+    const searches = await this.prisma.webSearch.findMany({
+      where: { userId },
+      distinct: ['query'],
+      orderBy: { createdAt: 'desc' },
+      take,
+      select: { query: true, createdAt: true },
+    });
+
+    return searches;
+  }
+
+  async suggestions(userId: string, query: string) {
+    const [ownHistory, external] = await Promise.all([
+      this.prisma.webSearch.findMany({
+        where: { userId, query: { contains: query, mode: 'insensitive' } },
+        distinct: ['query'],
+        orderBy: { createdAt: 'desc' },
+        take: 5,
+        select: { query: true },
+      }),
+      this.fetchExternalSuggestions(query),
+    ]);
+
+    const suggestions = new Set<string>([
+      ...ownHistory.map((entry) => entry.query),
+      ...external,
+    ]);
+
+    return { query, suggestions: [...suggestions].slice(0, 10) };
+  }
+
+  private async fetchExternalSuggestions(query: string): Promise<string[]> {
+    try {
+      const url = new URL('https://ac.duckduckgo.com/ac/');
+      url.searchParams.set('q', query);
+      url.searchParams.set('type', 'list');
+
+      const response = await fetch(url, { signal: AbortSignal.timeout(5_000) });
+
+      if (!response.ok) {
+        return [];
+      }
+
+      // "list" format: [query, [suggestion1, suggestion2, ...]]
+      const [, phrases] = (await response.json()) as [string, string[]];
+      return phrases ?? [];
+    } catch {
+      return [];
+    }
+  }
 }

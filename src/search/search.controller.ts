@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../common/decorators/current-user.decorator.js';
 import type { AuthenticatedUser } from '../common/interfaces/authenticated-user.interface.js';
 import { SearchQueryDto } from './dto/search-query.dto.js';
+import { SearchSuggestionsQueryDto } from './dto/search-suggestions-query.dto.js';
 import { SearchService } from './search.service.js';
 
 @ApiBearerAuth()
@@ -19,5 +20,18 @@ export class SearchController {
   @Get('history')
   history(@CurrentUser() user: AuthenticatedUser) {
     return this.searchService.history(user.id);
+  }
+
+  @Get('recent')
+  recent(@CurrentUser() user: AuthenticatedUser) {
+    return this.searchService.recent(user.id);
+  }
+
+  @Get('suggestions')
+  suggestions(
+    @CurrentUser() user: AuthenticatedUser,
+    @Query() query: SearchSuggestionsQueryDto,
+  ) {
+    return this.searchService.suggestions(user.id, query.q);
   }
 }
