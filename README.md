@@ -146,6 +146,26 @@ persisted across page reloads, so you only need to do it once per browser tab.
 The **Authorize** button (top right, next to the title) is what unlocks every protected endpoint
 below it — see "API documentation" above for the exact steps.
 
+### Example: an authenticated request end-to-end
+
+<p align="center"><img src="src/images/example-authorized-dialog.png" alt="Swagger UI Authorize dialog showing the bearer token as Authorized" width="600"></p>
+
+The Authorize dialog after pasting in a token: it now says **Authorized**, and the value is masked
+(shown as `******`) for safety. This state is what `persistAuthorization` keeps across reloads.
+
+<p align="center"><img src="src/images/example-authenticated-request.png" alt="GET /users/me request with the Authorization header attached, returning 200 with the user's profile" width="850"></p>
+
+`GET /users/me` called from Swagger UI once authorized — note the generated curl command now
+includes `-H 'Authorization: Bearer ...'` automatically, and the response is a real `200` with the
+logged-in user's profile (id, email, name, role, subscription).
+
+<p align="center"><img src="src/images/example-subscribe-response.png" alt="POST /subscriptions/subscribe returning 201 with the new subscription and plan details" width="850"></p>
+
+`POST /subscriptions/subscribe` returning a real `201` with the created subscription nested inside
+its plan (`FREE`, 100 requests/month) — and the documented alternative responses (`404` plan not
+found, `409` already subscribed) shown right below it, exactly as declared by the `@ApiResponse`
+decorators on that endpoint.
+
 <details>
 <summary>All endpoint groups (click to expand)</summary>
 
