@@ -97,3 +97,9 @@ typescript==6.0.3
 #npx prisma generate
 #npx prisma studio
 #npm run start:dev
+
+
+npx prisma db seed
+
+npm install @nestjs/jwt @nestjs/passport passport passport-jwt
+npm install -D @types/passport-jwt
