@@ -125,6 +125,29 @@ export class ProvidersService {
     }
   }
 
+  async healthCheck(id: string) {
+    const provider = await this.getProviderOrThrow(id);
+    const adapter = this.adapters[provider.name];
+    const apiKey = this.decrypt(provider.apiKeyEncrypted);
+    const startedAt = Date.now();
+
+    try {
+      await adapter.complete({
+        apiKey,
+        model: provider.model,
+        messages: [{ role: 'user', content: 'ping' }],
+      });
+
+      return { healthy: true, latencyMs: Date.now() - startedAt };
+    } catch (error) {
+      return {
+        healthy: false,
+        latencyMs: Date.now() - startedAt,
+        error: error instanceof Error ? error.message : String(error),
+      };
+    }
+  }
+
   private async getProviderOrThrow(id: string) {
     const provider = await this.prisma.aIProvider.findUnique({ where: { id } });
 

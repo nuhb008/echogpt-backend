@@ -6,6 +6,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import type { RoleName } from '../common/enums/index.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 
 @Injectable()
@@ -55,10 +56,48 @@ export class UsersService {
     return user;
   }
 
+  /** Admin-triggered removal: no password required, but the last admin is still protected. */
   async remove(id: string) {
-    await this.findById(id);
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      include: { role: true },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    await this.ensureNotLastAdmin(user.role.name);
+
     await this.prisma.user.delete({ where: { id } });
     return { success: true };
+  }
+
+  async setRole(id: string, roleName: RoleName) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      include: { role: true },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (user.role.name === 'ADMIN' && roleName !== 'ADMIN') {
+      await this.ensureNotLastAdmin('ADMIN');
+    }
+
+    const role = await this.prisma.role.findUnique({ where: { name: roleName } });
+
+    if (!role) {
+      throw new NotFoundException(`Role '${roleName}' does not exist`);
+    }
+
+    return this.prisma.user.update({
+      where: { id },
+      data: { roleId: role.id },
+      select: { id: true, email: true, name: true, role: { select: { name: true } } },
+    });
   }
 
   async updateProfile(userId: string, data: { name?: string }) {
@@ -101,17 +140,7 @@ export class UsersService {
   async deleteAccount(userId: string, password: string) {
     const user = await this.verifyPassword(userId, password);
 
-    if (user.role.name === 'ADMIN') {
-      const adminCount = await this.prisma.user.count({
-        where: { role: { name: 'ADMIN' } },
-      });
-
-      if (adminCount <= 1) {
-        throw new ForbiddenException(
-          'The last admin account cannot be deleted',
-        );
-      }
-    }
+    await this.ensureNotLastAdmin(user.role.name);
 
     // Sessions, subscription, conversations, searches and usage logs cascade.
     await this.prisma.user.delete({
@@ -119,6 +148,20 @@ export class UsersService {
     });
 
     return { success: true };
+  }
+
+  private async ensureNotLastAdmin(roleName: string) {
+    if (roleName !== 'ADMIN') {
+      return;
+    }
+
+    const adminCount = await this.prisma.user.count({
+      where: { role: { name: 'ADMIN' } },
+    });
+
+    if (adminCount <= 1) {
+      throw new ForbiddenException('The last admin account cannot be changed or deleted');
+    }
   }
 
   private async verifyPassword(userId: string, password: string) {

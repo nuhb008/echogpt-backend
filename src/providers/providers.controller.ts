@@ -32,4 +32,9 @@ export class ProvidersController {
   remove(@Param('id') id: string) {
     return this.providersService.remove(id);
   }
+
+  @Post(':id/health-check')
+  healthCheck(@Param('id') id: string) {
+    return this.providersService.healthCheck(id);
+  }
 }
