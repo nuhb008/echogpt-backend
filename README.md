@@ -70,7 +70,7 @@ You don't strictly need Docker if you already have a PostgreSQL 16 server availa
 
 ## Setup
 
-### Quick start (if you just want the commands)
+### Quick start 
 
 ```bash
 git clone https://github.com/nuhb008/echogpt-backend.git
