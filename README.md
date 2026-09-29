@@ -136,7 +136,26 @@ OpenAPI documents directly, so no separate collection file is needed (and can't 
 with the actual API).
 
 To try authenticated endpoints in Swagger UI: call `POST /auth/login`, copy the `accessToken` from
-the response, then click **Authorize** and paste it in as a bearer token.
+the response, then click **Authorize** (top right) and paste it in as a bearer token. This is
+persisted across page reloads, so you only need to do it once per browser tab.
+
+### Screenshots
+
+<p align="center"><img src="src/images/swagger-overview.png" alt="Swagger UI overview with the Authorize button and Auth endpoints" width="850"></p>
+
+The **Authorize** button (top right, next to the title) is what unlocks every protected endpoint
+below it — see "API documentation" above for the exact steps.
+
+<details>
+<summary>All endpoint groups (click to expand)</summary>
+
+<p align="center"><img src="src/images/swagger-users-subscriptions.png" alt="Users and Subscriptions endpoints" width="850"></p>
+<p align="center"><img src="src/images/swagger-subscriptions-providers.png" alt="Subscriptions and AI Providers endpoints" width="850"></p>
+<p align="center"><img src="src/images/swagger-chat-search-admin.png" alt="Chat, Search and Admin endpoints" width="850"></p>
+<p align="center"><img src="src/images/swagger-search-admin.png" alt="Search and Admin user-management endpoints" width="850"></p>
+<p align="center"><img src="src/images/swagger-admin-health-schemas.png" alt="Admin subscription management, Health endpoint, and request/response schemas" width="850"></p>
+
+</details>
 
 ## Running tests
 
@@ -148,7 +167,7 @@ npm run test:cov
 ## Notes on some design choices
 
 - **Refresh tokens** are stored server-side as a SHA-256 hash in the `Session` table (never the raw
-  token), and rotated on every use the old token is deleted the moment a new one is issued, so a
+  token), and rotated on every use — the old token is deleted the moment a new one is issued, so a
   stolen, already-used refresh token stops working.
 - **Provider API keys** are encrypted with AES-256-GCM using `ENCRYPTION_KEY` before being stored,
   and are never included in any API response.
@@ -156,6 +175,6 @@ npm run test:cov
   current calendar month, compared against the user's plan's `monthlyLimit`. Admins are exempt.
 - **AI provider adapters** (`src/providers/adapters/`) all implement the same
   `AIProviderAdapter.complete()` interface, so `ChatService` and `ProvidersService` don't need any
-  provider-specific branching adding a fourth provider only means adding one adapter class.
+  provider-specific branching — adding a fourth provider only means adding one adapter class.
 
 
