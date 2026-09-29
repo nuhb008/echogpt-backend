@@ -7,6 +7,7 @@ import { PassportModule } from '@nestjs/passport';
 import { AuthController } from './auth.controller.js';
 import { AuthService } from './auth.service.js';
 import { JwtAuthGuard } from './guards/jwt-auth.guard.js';
+import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy.js';
 import { JwtStrategy } from './strategies/jwt.strategy.js';
 
 import { RolesGuard } from '../common/guards/roles.guard.js';
@@ -35,6 +36,7 @@ import { UsersModule } from '../users/users.module.js';
   providers: [
     AuthService,
     JwtStrategy,
+    JwtRefreshStrategy,
     { provide: APP_GUARD, useClass: JwtAuthGuard },
     { provide: APP_GUARD, useClass: RolesGuard },
   ],

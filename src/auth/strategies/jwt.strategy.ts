@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
@@ -31,6 +31,9 @@ export class JwtStrategy extends PassportStrategy(
     email: string;
     role: string;
   }) {
-    return this.usersService.findById(payload.sub);
+    // A valid token for a deleted account must be a 401, not findById's 404.
+    return this.usersService.findById(payload.sub).catch(() => {
+      throw new UnauthorizedException();
+    });
   }
 }
