@@ -148,7 +148,7 @@ npm run test:cov
 ## Notes on some design choices
 
 - **Refresh tokens** are stored server-side as a SHA-256 hash in the `Session` table (never the raw
-  token), and rotated on every use — the old token is deleted the moment a new one is issued, so a
+  token), and rotated on every use the old token is deleted the moment a new one is issued, so a
   stolen, already-used refresh token stops working.
 - **Provider API keys** are encrypted with AES-256-GCM using `ENCRYPTION_KEY` before being stored,
   and are never included in any API response.
@@ -156,6 +156,6 @@ npm run test:cov
   current calendar month, compared against the user's plan's `monthlyLimit`. Admins are exempt.
 - **AI provider adapters** (`src/providers/adapters/`) all implement the same
   `AIProviderAdapter.complete()` interface, so `ChatService` and `ProvidersService` don't need any
-  provider-specific branching — adding a fourth provider only means adding one adapter class.
+  provider-specific branching adding a fourth provider only means adding one adapter class.
 
 
