@@ -33,7 +33,13 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
 
-  SwaggerModule.setup('docs', app, document);
+  SwaggerModule.setup('docs', app, document, {
+    // Without this, clicking "Authorize" is forgotten on every page reload/new tab,
+    // which looks exactly like authorization silently not working.
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
+  });
 
   await app.listen(process.env.PORT ?? 3000);
 }
