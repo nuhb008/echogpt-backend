@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -19,6 +21,15 @@ import { HealthModule } from './health/health.module';
       isGlobal: true,
     }),
 
+    // Global default; auth.controller.ts applies a stricter @Throttle to login/register.
+    ThrottlerModule.forRoot([
+      {
+        name: 'default',
+        ttl: 60_000,
+        limit: 100,
+      },
+    ]),
+
     PrismaModule,
 
     AuthModule,
@@ -36,6 +47,9 @@ import { HealthModule } from './health/health.module';
     AdminModule,
 
     HealthModule,
+  ],
+  providers: [
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
   ],
 })
 export class AppModule {}
