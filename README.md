@@ -14,24 +14,24 @@ and documented with Swagger/OpenAPI.
 
 ## Features
 
-- **Auth** — register, login, JWT access + refresh tokens (rotated on every refresh), logout (single
+- **Auth** : register, login, JWT access + refresh tokens (rotated on every refresh), logout (single
   session or all sessions), rate-limited login/register.
-- **Users** — profile (get/update), change password, delete account. The last remaining admin
+- **Users** : profile (get/update), change password, delete account. The last remaining admin
   account cannot be demoted or deleted.
-- **Subscriptions** — FREE/PREMIUM plans (seeded), automatic FREE-plan provisioning on registration,
+- **Subscriptions** : FREE/PREMIUM plans (seeded), automatic FREE-plan provisioning on registration,
   upgrade/downgrade, subscribe/cancel, monthly usage tracking, and a monthly AI-request limit
   enforced on the chat endpoint (admins bypass the limit).
-- **AI providers** — pluggable adapters for OpenAI, Anthropic (Claude) and Google Gemini behind a
+- **AI providers** : pluggable adapters for OpenAI, Anthropic (Claude) and Google Gemini behind a
   common interface. Admins can add/edit/enable/disable providers, pick a default, and run a live
   health check. API keys are encrypted at rest (AES-256-GCM) and are never returned by the API.
-- **Chat** — conversations with full message history, provider selection (or use the configured
+- **Chat** : conversations with full message history, provider selection (or use the configured
   default), usage logging, and a 502 response (not a generic 500) when the upstream provider fails.
-- **Web search** — search (via DuckDuckGo), search history, recent (deduplicated) queries, and
+- **Web search** : search (via DuckDuckGo), search history, recent (deduplicated) queries, and
   autocomplete suggestions that combine the user's own history with an external suggestion API.
-- **Admin panel** — dashboard stats, system health (uptime/memory/DB latency), user management
+- **Admin panel** : dashboard stats, system health (uptime/memory/DB latency), user management
   (list/get/delete/change role), subscription management (list/force-set status), and request/usage
   logs.
-- **Security** — bcrypt password hashing, JWT auth guard + role guard applied globally (opt out with
+- **Security** : bcrypt password hashing, JWT auth guard + role guard applied globally (opt out with
   `@Public()`), global rate limiting (100 req/min) with a stricter limit on login/register (5/min),
   encrypted provider API keys, CORS enabled, request validation on every DTO.
 
@@ -158,10 +158,4 @@ npm run test:cov
   `AIProviderAdapter.complete()` interface, so `ChatService` and `ProvidersService` don't need any
   provider-specific branching — adding a fourth provider only means adding one adapter class.
 
-## Not implemented (out of scope for this pass)
 
-- Email verification
-- Streaming chat responses
-- Search result caching
-- A dedicated `.postman_collection.json` file (see "API documentation" above for why the OpenAPI
-  export is used instead)
