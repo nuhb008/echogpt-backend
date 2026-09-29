@@ -11,11 +11,14 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy.js';
 import { JwtStrategy } from './strategies/jwt.strategy.js';
 
 import { RolesGuard } from '../common/guards/roles.guard.js';
+import { SubscriptionsModule } from '../subscriptions/subscriptions.module.js';
 import { UsersModule } from '../users/users.module.js';
 
 @Module({
   imports: [
     UsersModule,
+
+    SubscriptionsModule,
 
     PassportModule,
 

@@ -1,8 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { MessageRole } from '../common/enums/index.js';
+import { MessageRole, RoleName } from '../common/enums/index.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import type { ChatMessageInput } from '../providers/interfaces/ai-provider.interface.js';
 import { ProvidersService } from '../providers/providers.service.js';
+import { SubscriptionsService } from '../subscriptions/subscriptions.service.js';
 import type { SendMessageDto } from './dto/send-message.dto.js';
 
 @Injectable()
@@ -10,6 +11,7 @@ export class ChatService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly providersService: ProvidersService,
+    private readonly subscriptionsService: SubscriptionsService,
   ) {}
 
   listConversations(userId: string) {
@@ -33,7 +35,11 @@ export class ChatService {
     return conversation;
   }
 
-  async sendMessage(userId: string, dto: SendMessageDto) {
+  async sendMessage(userId: string, dto: SendMessageDto, role: RoleName) {
+    if (role !== RoleName.ADMIN) {
+      await this.subscriptionsService.assertWithinUsageLimit(userId);
+    }
+
     const conversation = dto.conversationId
       ? await this.getConversation(userId, dto.conversationId)
       : await this.prisma.conversation.create({

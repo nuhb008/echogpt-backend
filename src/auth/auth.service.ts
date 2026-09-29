@@ -10,6 +10,7 @@ import * as bcrypt from 'bcrypt';
 import { createHash, randomUUID } from 'node:crypto';
 
 import { PrismaService } from '../prisma/prisma.service.js';
+import { SubscriptionsService } from '../subscriptions/subscriptions.service.js';
 import { UsersService } from '../users/users.service.js';
 
 @Injectable()
@@ -19,6 +20,7 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly config: ConfigService,
+    private readonly subscriptionsService: SubscriptionsService,
   ) {}
 
   async login(email: string, password: string) {
@@ -89,6 +91,8 @@ export class AuthService {
         roleId: userRole.id,
       },
     });
+
+    await this.subscriptionsService.provisionDefaultPlan(user.id);
 
     return {
       id: user.id,

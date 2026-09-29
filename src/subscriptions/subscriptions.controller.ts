@@ -5,6 +5,7 @@ import { Public } from '../common/decorators/public.decorator.js';
 import { Roles } from '../common/decorators/roles.decorator.js';
 import { RoleName } from '../common/enums/index.js';
 import type { AuthenticatedUser } from '../common/interfaces/authenticated-user.interface.js';
+import { ChangePlanDto } from './dto/change-plan.dto.js';
 import { CreatePlanDto } from './dto/create-plan.dto.js';
 import { SubscribeDto } from './dto/subscribe.dto.js';
 import { UpdatePlanDto } from './dto/update-plan.dto.js';
@@ -53,5 +54,20 @@ export class SubscriptionsController {
   @Post('cancel')
   cancel(@CurrentUser() user: AuthenticatedUser) {
     return this.subscriptionsService.cancel(user.id);
+  }
+
+  @Get('usage')
+  getUsage(@CurrentUser() user: AuthenticatedUser) {
+    return this.subscriptionsService.getUsage(user.id);
+  }
+
+  @Post('upgrade')
+  upgrade(@CurrentUser() user: AuthenticatedUser, @Body() dto: ChangePlanDto) {
+    return this.subscriptionsService.changePlan(user.id, dto.planId, 'upgrade');
+  }
+
+  @Post('downgrade')
+  downgrade(@CurrentUser() user: AuthenticatedUser, @Body() dto: ChangePlanDto) {
+    return this.subscriptionsService.changePlan(user.id, dto.planId, 'downgrade');
   }
 }

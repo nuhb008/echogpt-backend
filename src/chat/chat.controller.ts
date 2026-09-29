@@ -28,6 +28,6 @@ export class ChatController {
 
   @Post('messages')
   sendMessage(@CurrentUser() user: AuthenticatedUser, @Body() dto: SendMessageDto) {
-    return this.chatService.sendMessage(user.id, dto);
+    return this.chatService.sendMessage(user.id, dto, user.role.name);
   }
 }
